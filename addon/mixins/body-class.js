@@ -20,7 +20,8 @@ export default Mixin.create({
     },
 
     error: function(/* error, transition */) {
-      const document = this.owner.lookup('service:-document');
+      let owner = getOwner(this);
+      const document = owner.lookup('service:-document');
       const body = document.body;
 
       addClass(body, 'error');
