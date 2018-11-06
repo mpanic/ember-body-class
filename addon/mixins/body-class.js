@@ -1,11 +1,13 @@
 import Mixin from '@ember/object/mixin';
 
 import { addClass, removeClass } from '../util/bodyClass';
+import { getOwner } from '@ember/application';
 
 export default Mixin.create({
   actions: {
     loading(/* transition, route */) {
-      const document = this.owner.lookup('service:-document');
+      let owner = getOwner(this);
+      const document = owner.lookup('service:-document');
       const body = document.body;
 
       addClass(body, 'loading');
