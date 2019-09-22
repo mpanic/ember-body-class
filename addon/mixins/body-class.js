@@ -1,18 +1,18 @@
 import Mixin from '@ember/object/mixin';
+import { getOwner } from '@ember/application';
 
 import { addClass, removeClass } from '../util/bodyClass';
 import { getOwner } from '@ember/application';
 
 export default Mixin.create({
   actions: {
-    loading(/* transition, route */) {
-      let owner = getOwner(this);
-      const document = owner.lookup('service:-document');
+    loading(transition) {
+      const document = getOwner(this).lookup('service:-document');
       const body = document.body;
 
       addClass(body, 'loading');
 
-      this.router.on('didTransition', function() {
+      transition.finally(function() {
         removeClass(body, 'loading');
       });
 
@@ -20,15 +20,19 @@ export default Mixin.create({
     },
 
     error: function(/* error, transition */) {
-      let owner = getOwner(this);
-      const document = owner.lookup('service:-document');
+      const document = getOwner(this).lookup('service:-document');
       const body = document.body;
 
       addClass(body, 'error');
 
-      this.router.on('didTransition', function() {
-        removeClass(body, 'error');
-      });
+      let router = this._router
+
+      if(router) {
+        // router.on('didTransition', function() {
+        router.on('routeDidChange', function() {
+          removeClass(body, 'error');
+        });
+      }
 
       return true;
     }
